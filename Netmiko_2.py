@@ -5,7 +5,7 @@ import json
 passwd = getpass.getpass('Please enter the password: ')
 
 # List of device IPs
-ip_list = ["192.168.1.51", "192.168.1.52"]
+ip_list = ["192.168.1.53", "192.168.1.52"]
 
 # Create a list of dictionaries for each device
 device_list = []

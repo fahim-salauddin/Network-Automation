@@ -1,12 +1,19 @@
 from netmiko import ConnectHandler
 from getpass import getpass
 
-cisco1 = {
+cisco1 =[ {
     "device_type": "cisco_ios",
     "host": "ESW2",
     "username": "cisco",
     "password": "cisco",
+},
+{
+    "device_type": "cisco_ios",
+    "host": "ESW3",
+    "username": "cisco",
+    "password": "cisco",
 }
+]
 
 # Show command that we execute.
 command = "show ip int brief"

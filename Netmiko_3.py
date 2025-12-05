@@ -6,14 +6,14 @@ devices = [
 'ip': '192.168.1.62',
 'username': 'cisco',
 'password': 'cisco',
-'secret': 'cisco123',
+#'secret': 'cisco123',
 },
 {
 'device_type': 'cisco_ios',
 'ip': '192.168.1.63',
 'username': 'cisco',
 'password': 'cisco',
-'secret': 'cisco123',
+#'secret': 'cisco123',
 },
 ]
 # Iterate through a list of device dictionaries

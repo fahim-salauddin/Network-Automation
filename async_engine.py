@@ -1,6 +1,6 @@
 """
-Async orchestration for blocking Netmiko calls using asyncio.to_thread.
-This scales by running the blocking ConnectHandler in threadpool while keeping async orchestration.
+Async orchestration for blocking Netmiko calls using asyncio with run_in_executor.
+This scales by running the blocking ConnectHandler in a threadpool while keeping async orchestration.
 """
 import asyncio
 from datetime import datetime
@@ -10,8 +10,8 @@ from netmiko import ConnectHandler
 os.makedirs("backups_async", exist_ok=True)
 
 devices = [
-    {"device_type":"cisco_ios", "host":"192.168.1.52", "username":"cisco","password":"cisco"},
-    {"device_type":"cisco_ios", "host":"192.168.1.53", "username":"cisco","password":"cisco"},
+    {"device_type": "cisco_ios", "host": "192.168.1.52", "username": "cisco", "password": "cisco"},
+    {"device_type": "cisco_ios", "host": "192.168.1.53", "username": "cisco", "password": "cisco"},
     # extend for 100s/1000s of devices (ensure infrastructure supports it)
 ]
 
@@ -21,9 +21,12 @@ async def backup_device(d):
         cfg = net.send_command("show running-config")
         net.disconnect()
         return cfg
+
     host = d["host"]
+    loop = asyncio.get_running_loop()
     try:
-        cfg = await asyncio.to_thread(blocking)
+        # Use run_in_executor instead of asyncio.to_thread
+        cfg = await loop.run_in_executor(None, blocking)
         fname = f"backups_async/{host}_{datetime.now().strftime('%Y%m%d-%H%M')}.txt"
         with open(fname, "w") as f:
             f.write(cfg)

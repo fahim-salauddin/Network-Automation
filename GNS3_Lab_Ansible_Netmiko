@@ -1,0 +1,150 @@
+===Router & Switch Config===
+R1:
+conf t
+hostname R1
+int fa0/0
+ no sh
+ ip add 192.168.1.51 255.255.255.0
+
+ 
+R2:
+conf t
+hostname R2
+int et0/0
+ no sh
+ ip add 192.168.1.52 255.255.255.0
+
+ 
+R3:
+conf t
+hostname R3
+int et0/0
+ no sh
+ ip add 192.168.1.53 255.255.255.0
+
+
+ESW2:
+conf t
+hostname SW1
+int Fa0/0
+ no sw
+ no sh
+ ip add 192.168.1.62 255.255.255.0
+
+
+ESW3:
+conf t
+hostname SW2
+int Fa0/0
+ no sh
+ no sw
+ ip add 192.168.1.63 255.255.255.0
+
+
+===ADD to all Routers and Switches===
+
+For Remote Accessibility:
+usern cisco pas cisco
+usern cisco priv 15
+lin vty 0 4
+ tr i a
+ logi loc
+ exi
+ip domain-n netautomation.com  
+
+cry key gen rsa
+1024
+
+
+===NA Appliance Configuration===
+
+
+nano /etc/network/interfaces
+
+auto eth0
+iface eth0 inet dhcp
+
+
+
+============================
+
+nano ansible.cfg
+
+[defaults]
+inventory = ./myhosts
+host_key_checking = false
+timeout = 15 
+deprecation_warnings=False
+
+============================
+
+nano myhosts
+
+[routers]
+R1
+R2
+R3
+
+[switches]
+ESW2
+ESW3
+
+============================
+
+nano /etc/hosts
+
+192.168.1.51 R1
+192.168.1.52 R2
+192.168.1.53 R3
+192.168.1.62 ESW2
+192.168.1.63 ESW3
+
+
+NA Appliance Verification:===
+ifconfig
+cat ansible.cfg
+cat myhosts
+cat /etc/hosts
+ansible --list-hosts all
+ansible --list-hosts routers
+ansible --list-hosts switches
+
+ping R2
+ssh cisco@R2
+
+
+===AD HOC Commands===
+ansible R2 -m raw -a "show version" -u cisco -k
+
+
+
+
+#####################################################################################
+root@NetworkAutomation-1:~# ifconfig
+eth0: flags=4163<UP,BROADCAST,RUNNING,MULTICAST>  mtu 1500
+        inet 192.168.1.113  netmask 255.255.255.0  broadcast 0.0.0.0
+        ether 02:42:12:ce:49:00  txqueuelen 1000  (Ethernet)
+        RX packets 11  bytes 2230 (2.2 KB)
+        RX errors 0  dropped 56  overruns 0  frame 0
+        TX packets 9  bytes 2322 (2.3 KB)
+        TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
+
+lo: flags=73<UP,LOOPBACK,RUNNING>  mtu 65536
+        inet 127.0.0.1  netmask 255.0.0.0
+        inet6 ::1  prefixlen 128  scopeid 0x10<host>
+        loop  txqueuelen 1000  (Local Loopback)
+        RX packets 0  bytes 0 (0.0 B)
+        RX errors 0  dropped 0  overruns 0  frame 0
+        TX packets 0  bytes 0 (0.0 B)
+        TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
+
+AD HOC Commands:==============
+ansible R2 -m raw -a "show version" -u cisco -k
+ansible R3 -m raw -a "show ip ei nei" -u cisco -k
+ansible routers -i ./myhosts -m raw -a "sh ip ei nei" -u cisco -k
+ansible all -i ./myhosts -m raw -a "show version" -u cisco -k
+ansible all -i ./myhosts -m raw -a "show version" -u cisco -k | grep 'CHANGED\|flash0\|ROM: 3700 Software'
+ansible all -i ./myhosts -m raw -a "show run | i user" -u cisco -k | grep 'CHANGED\|username'
+ansible all -i ./myhosts -m raw -a "show run | i user" -u cisco -k | grep 'CHANGED\|username' (greaterthansign) username.txt
+ansible all -i ./myhosts -m raw -a "show arp" -u cisco -k
+ansible all -i ./myhosts -m raw -a "show arp" -u cisco -k | grep 'CHANGED\|4924'

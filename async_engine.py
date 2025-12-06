@@ -10,8 +10,8 @@ from netmiko import ConnectHandler
 os.makedirs("backups_async", exist_ok=True)
 
 devices = [
-    {"device_type":"cisco_ios", "host":"192.0.2.1", "username":"admin","password":"password"},
-    {"device_type":"cisco_ios", "host":"192.0.2.2", "username":"admin","password":"password"},
+    {"device_type":"cisco_ios", "host":"192.168.1.52", "username":"cisco","password":"cisco"},
+    {"device_type":"cisco_ios", "host":"192.168.1.53", "username":"cisco","password":"cisco"},
     # extend for 100s/1000s of devices (ensure infrastructure supports it)
 ]
 
